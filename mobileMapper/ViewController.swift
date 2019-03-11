@@ -42,7 +42,19 @@ class ViewController: UIViewController , CLLocationManagerDelegate{
         let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         request.region = MKCoordinateRegion(center: currentLocation.coordinate, span: span)
         let search = MKLocalSearch(request: request)
-        search.start { (respone, error)  in
+        search.start { (response, error)  in
+            
+            guard let response = response else {
+                return
+            }
+            for mapItem in response.mapItems{
+                self.parks.append(mapItem)
+                let annotation = MKPointAnnotation()
+                
+                annotation.coordinate = mapItem.placemark.coordinate
+                annotation.title = mapItem.name
+                self.mapView.addAnnotation(annotation)
+            }
             
         }
     }
