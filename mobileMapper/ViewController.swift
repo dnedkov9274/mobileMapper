@@ -26,6 +26,9 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
         mapView.delegate = self
     }
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+        if annotation.isEqual(mapView.userLocation){
+            return nil
+        }
         let pin = MKAnnotationView(annotation: annotation, reuseIdentifier: nil)
         pin.image = UIImage(named: "Gino")
         pin.canShowCallout = true
