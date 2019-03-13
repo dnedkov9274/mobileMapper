@@ -15,6 +15,17 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
     let locationManager = CLLocationManager()
     var currentLocation: CLLocation!
     var parks: [MKMapItem] = []
+    
+    var initialRegion:MKCoordinateRegion!
+    var isInitialMapLoad = true
+    
+    func mapViewDidFinishLoadingMap(_ mapView: MKMapView) {
+        if isInitialMapLoad{
+            initialRegion = MKCoordinateRegion(center: mapView.centerCoordinate, span: mapView.region.span)
+            isInitialMapLoad = false
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
        locationManager.requestWhenInUseAuthorization()
@@ -35,9 +46,16 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
         pin.canShowCallout = true
         let button = UIButton(type: .detailDisclosure)
         pin.rightCalloutAccessoryView = button
+        let secondButton = UIButton(type: .contactAdd)
+        pin.leftCalloutAccessoryView = secondButton
         return pin
     }
     func mapView(_ mapView:MKMapView, annotationView view:MKAnnotationView, calloutAccessoryControlTapped control: UIControl){
+        let buttonPressed = control as! UIButton
+        if buttonPressed.buttonType == .contactAdd{
+            mapView.setRegion(initialRegion, animated: true)
+            return
+        }
         var currentMapItem = MKMapItem()
         if let title = view.annotation?.title, let parkName = title{
             for mapItem in parks{
@@ -47,7 +65,8 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
             }
         }
         let placeMark = currentMapItem.placemark
-        print(placeMark)
+        let address = placeMark.addressDictionary
+        //print(address["Street"]!)
         if let url = currentMapItem.url {
            let safariVC = SFSafariViewController(url: url)
             present(safariVC, animated: true, completion: nil)
@@ -58,7 +77,7 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         currentLocation = locations[0]
-        print(currentLocation)
+        //print(currentLocation)
     }
     @IBAction func whenZoomButtonPressed(_ sender: Any) {
         let center = currentLocation.coordinate
