@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import SafariServices
 
 class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDelegate{
     @IBOutlet weak var mapView: MKMapView!
@@ -44,6 +45,12 @@ class ViewController: UIViewController , CLLocationManagerDelegate, MKMapViewDel
                     currentMapItem = mapItem
                 }
             }
+        }
+        let placeMark = currentMapItem.placemark
+        print(placeMark)
+        if let url = currentMapItem.url {
+           let safariVC = SFSafariViewController(url: url)
+            present(safariVC, animated: true, completion: nil)
         }
     }
     
